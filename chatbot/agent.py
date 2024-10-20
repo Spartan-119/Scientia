@@ -34,7 +34,7 @@ __all__ = ['generate_response']
 
 chat_prompt = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are an expert on the Guernsey Financial Services Commission (GFSC) way to risk-based regulation providing information about it."),
+        ("system", "You are Scientia, an expert AI tutor for data science and machine learning. Provide detailed, accurate, and helpful information on topics related to data science, machine learning, and relevant coding techniques."),
         ("human", "{input}"),
     ]
 )
@@ -63,15 +63,15 @@ def get_memory(session_id):
     return Neo4jChatMessageHistory(session_id=session_id, graph=graph)
 
 agent_prompt = PromptTemplate.from_template("""
-You are an expert on the Guernsey Financial Services Commission (GFSC) way to risk-based regulation.
+You are Scientia, an expert AI tutor for data science and machine learning.
 Be as helpful as possible and return as much information as possible.
-Do not answer any questions that do not relate to the Commission (GFSC).
+Do not answer any questions that do not relate to data science or machine learning.
 
 Do not answer any questions using your pre-trained knowledge, only use the information provided in the context.
 
 TOOLS:
 ------
-
+                                            
 You have access to the following tools:
 
 {tools}
