@@ -1,7 +1,9 @@
 import streamlit as st
-from streamlit_ace import st_ace
+import streamlit_ace as st_ace
 import sys
 import io
+from chatbot.agent import generate_response  # Import the chatbot response function
+from chatbot.utils import write_message  # Helper function to display messages
 
 # Set up the page layout with two columns
 st.set_page_config(layout="wide")
@@ -9,17 +11,16 @@ st.set_page_config(layout="wide")
 # Page Title
 st.title("Scientia - AI Tutor for Data Science and Machine Learning")
 
-# Create two columns, left for code editor and output, right for the chatbot (placeholder for now)
+# Create two columns, left for code editor and output, right for the chatbot
 col1, col2 = st.columns([2, 1])
 
 # Left Column: Code Editor and Output
 with col1:
     st.subheader("Code Editor")
-    
-    # Use st_ace to create an Ace code editor with VS Code Dark theme
-    code = st_ace(
+
+    code = st_ace.st_ace(
         language='python',
-        theme='github',  # Set the theme to VS Code Dark
+        theme='monokai',
         key='ace_editor',
         height=300,
         font_size=14,
@@ -29,30 +30,48 @@ with col1:
         wrap=True,
         auto_update=True,
     )
-    
-    # Button to run code
+
     if st.button("Run Code"):
         output = io.StringIO()  # Create a string buffer to capture output
         error = None
-        
+
         try:
-            # Redirect stdout to capture print statements
             sys.stdout = output
-            exec(code, {})  # Execute the user's code
+            exec(code, {})
         except Exception as e:
             error = str(e)
         finally:
-            # Reset stdout to default
             sys.stdout = sys.__stdout__
 
-        # If there was an error, show it in the output
         if error:
             st.text_area("Output", value=f"Error: {error}", height=200)
         else:
-            # Show the captured output
             st.text_area("Output", value=output.getvalue(), height=200)
 
-# Right Column: Placeholder for AI Chatbot
+# Right Column: Chatbot Integration
 with col2:
-    st.subheader("AI-Tutor Chatbot (Coming Soon)")
-    st.write("This space is reserved for the chatbot that will assist in learning.")
+    st.subheader("AI-Tutor Chatbot")
+
+    # Initialize chat session state if not already done
+    if "messages" not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": "Hi, I'm Scientia! How can I assist you today?"}
+        ]
+
+    # Display chat history
+    for message in st.session_state.messages:
+        write_message(message['role'], message['content'], save=False)
+
+    # Handle user input in the chat
+    user_input = st.text_input("Your message", "")
+    
+    if st.button("Send"):
+        if user_input:
+            # Save user input to chat history
+            write_message('user', user_input)
+            
+            # Call chatbot to generate a response
+            response = generate_response(user_input)
+            
+            # Save the AI response to chat history
+            write_message('assistant', response)
