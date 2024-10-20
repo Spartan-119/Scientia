@@ -20,7 +20,7 @@ with col1:
 
     code = st_ace.st_ace(
         language='python',
-        theme='monokai',
+        theme='merbivore',
         key='ace_editor',
         height=300,
         font_size=14,

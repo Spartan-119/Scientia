@@ -1,3 +1,3 @@
 # Building Scientia
 
-![output](static/meh.png)
+![output](static/image.png)
